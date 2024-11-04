@@ -1,5 +1,6 @@
 import "./style.css";
 import { KeyCode, KeyCodeReverseMap } from "./KeyCode";
+import { Vec2 } from "./Vec2";
 
 const canvas = document.querySelector("canvas")!;
 let timestamp: number = 0;
@@ -17,6 +18,12 @@ class Input {
         }
         window.addEventListener("keydown", Input.handleKeydown);
         window.addEventListener("keyup", Input.handleKeyup);
+        window.addEventListener("keypress", Input.handleKeypress);
+    }
+
+    public static dispose(): void {
+        window.removeEventListener("keydown", Input.handleKeydown);
+        window.removeEventListener("keyup", Input.handleKeyup);
     }
 
     // KeyDown and KeyUp are frame based inputs.
@@ -45,7 +52,6 @@ class Input {
 
     public static handleKeydown(e: KeyboardEvent): void {
         Input._keydownMap.set(KeyCodeReverseMap[e.key], true);
-        Input._pressMap.set(KeyCodeReverseMap[e.key], true);
     }
 
     public static handleKeyup(e: KeyboardEvent): void {
@@ -54,10 +60,28 @@ class Input {
         Input._pressMap.set(KeyCodeReverseMap[e.key], false);
     }
 
-    public static dispose(): void {
-        window.removeEventListener("keydown", Input.handleKeydown);
-        window.removeEventListener("keyup", Input.handleKeyup);
-    }
+    public static handleKeypress(e: KeyboardEvent): void {
+        Input._pressMap.set(KeyCodeReverseMap[e.key], true);
+    };
 }
 
 Input.init();
+
+class Game {
+};
+
+function main(timestamp: number = 0) {
+    if (Input.GetKey(KeyCode.Space)) {
+        console.log("pressing space");
+    }
+    if (Input.GetKeyDown(KeyCode.Space)) {
+        console.log("KeyDown space");
+    }
+    if (Input.GetKeyUp(KeyCode.Space)) {
+        console.log("KeyUp space");
+        console.log(Vec2.zero);
+    }
+    Input.cleanUp();
+    requestAnimationFrame(main);
+}
+main();
